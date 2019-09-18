@@ -1,7 +1,7 @@
 package com.pyuser.bueno.rover;
 
 import com.pyuser.bueno.exceptions.InvalidCommandException;
-import com.pyuser.bueno.exceptions.InvalidMoveExeption;
+import com.pyuser.bueno.exceptions.InvalidMoveException;
 import com.pyuser.bueno.helper.ArrayUtils;
 import com.pyuser.bueno.helper.Pair;
 
@@ -11,7 +11,15 @@ import java.util.Scanner;
 
 import static java.lang.System.out;
 
+/**
+ * Class implementing the behaviour for the Mars rover.
+ * Has a console.
+ */
 public class Rover {
+    public static String TOTAL_COMMANDS_COUNT = "TotalCommandsCount";
+    public static String FAILED_COMMANDS_COUNT= "FailedCommandsCount";
+
+    private String _env = "";  // DTAP - dev, test, acceptance, prod
     private Pair<Integer, Integer> _position;
     private Pair<Integer, Integer> _initialPosition;
     private char _orientation;
@@ -20,6 +28,21 @@ public class Rover {
     private int _totalCommands = 0;
     private int _failedCommands = 0;
     private String _version = "v1.0";
+    final private char[] compass = {'N', 'E', 'S', 'W'};
+
+    public Rover(int row, int col, char orientation, Plateau plateau) {
+        _env = System.getenv("DTAP");
+
+        _position = new Pair<Integer, Integer>(row, col);
+        _initialPosition = _position;
+        _orientation = orientation;
+        _initialOrientation = _orientation;
+        _plateau = plateau;
+    }
+
+    public Rover(Pair<Integer, Integer> initialPosition, char orientation, Plateau plateau) {
+        this(initialPosition.getLeft(), initialPosition.getRight(), orientation, plateau);
+    }
 
     public void setPlateau(Plateau _plateau) {
         this._plateau = _plateau;
@@ -29,16 +52,11 @@ public class Rover {
         return _orientation;
     }
 
-    public Rover(int row, int col, char orientation, Plateau plateau) {
-        _position = new Pair<Integer, Integer>(row, col);
-        _initialPosition = _position;
-        _orientation = orientation;
-        _initialOrientation = _orientation;
-        _plateau = plateau;
+    public Pair<Integer, Integer> getPosition() {
+        return _position;
     }
 
-
-    private Pair figureOutNewPosition(Pair<Integer, Integer> currentPosition,
+    private Pair<Integer, Integer> figureOutNewPosition(Pair<Integer, Integer> currentPosition,
                                       int numGridPoints, char direction)
             throws Exception {
         int movement = 0;
@@ -71,13 +89,13 @@ public class Rover {
                         currentPosition.getRight() + movement);
                 break;
             default:
-                throw new Exception("Unknown direction; " + direction);
+                throw new Exception("Unkwn direction; " + direction);
         }
 
         return newPosition;
     }
 
-    public Pair move(int numGridPoints) throws Exception {
+    private Pair<Integer, Integer> move(int numGridPoints) throws Exception {
         Pair<Integer, Integer> newPosition = figureOutNewPosition(
                 _position, numGridPoints, _orientation);
 
@@ -85,15 +103,11 @@ public class Rover {
             if (_plateau.isPositionLegitimate(newPosition.getLeft(), newPosition.getRight())) {
                 _position = newPosition;
             }
-        } catch (InvalidMoveExeption | InvalidCommandException e) {
+        } catch (InvalidMoveException | InvalidCommandException e) {
             _failedCommands++;
             throw e;
         }
 
-        return _position;
-    }
-
-    public Pair getPosition() {
         return _position;
     }
 
@@ -103,8 +117,7 @@ public class Rover {
      * @return
      * @throws Exception
      */
-    public char rotate(char direction) throws Exception {
-        char[] compass = {'N', 'E', 'S', 'W'};
+    private char rotate(char direction) throws Exception {
 
         if (direction != 'L' && direction != 'R') {
             throw new InvalidCommandException("Bad rotation specified; " + direction);
@@ -124,18 +137,30 @@ public class Rover {
         return _orientation;
     }
 
-    public void execute(String commands) throws Exception {
+    public Pair<Integer, Integer> execute(String commands) throws Exception {
         char[] commandsC = commands.trim().toCharArray();
+        Exception caughtException = null;
         for (int i = 0; i < commandsC.length; ++i) {
-            execute(commandsC[i]);
+            try {
+                execute(commandsC[i]);
+            } catch (Exception e) {
+                if (caughtException == null) {  // only keeping first exception
+                    caughtException = e;
+                }
+            }
         }
+        if (caughtException != null) {
+            throw caughtException;
+        }
+
+        return _position;
     }
 
-    public void execute(char command) throws Exception {
-        execute(command, 1);
+    public Pair<Integer, Integer> execute(char command) throws Exception {
+        return execute(command, 1);
     }
 
-    public void execute(char command, int iterations) throws Exception {
+    public Pair<Integer, Integer> execute(char command, int iterations) throws Exception {
         _totalCommands++;  // bad/invalid commands are counted.
         switch (command) {
             case 'R':
@@ -148,12 +173,15 @@ public class Rover {
                 move(iterations);
                 break;
             case 'O':
-                _totalCommands--;  // not counting this one.
-                out.println("Rover is facing; " + getOrientation());
-                break;
+                if ("dev".equalsIgnoreCase(_env)) {
+                    _totalCommands--;  // not counting this one.
+                    out.println("Rover is facing; " + getOrientation());
+                    break;
+                }
             default:
                 throw new InvalidCommandException("Unknown command; " + command);
         }
+        return _position;
     }
 
     public void console() throws Exception {
@@ -181,8 +209,9 @@ public class Rover {
     public Map getMetrics() {
         Map res = new HashMap<String, Integer>();
 
-        res.put("TotalCommands", _totalCommands);
-        res.put("FailedCommands", _failedCommands);
+        res.put(TOTAL_COMMANDS_COUNT, _totalCommands);
+        res.put(FAILED_COMMANDS_COUNT, _failedCommands);
+
         return res;
     }
 
@@ -191,7 +220,6 @@ public class Rover {
                 "Mars Rover %s closed.\n";
         out.println(mesg.format(mesg, _totalCommands, _failedCommands, _version));
     }
-
 
     @Override
     public String toString() {
@@ -204,6 +232,8 @@ public class Rover {
     public void reset() {
         _position = _initialPosition;
         _orientation = _initialOrientation;
+        _totalCommands = 0;
+        _failedCommands = 0;
     }
 
     public void printPlateau() {

@@ -1,6 +1,6 @@
 package com.pyuser.bueno.rover;
 
-import com.pyuser.bueno.exceptions.InvalidMoveExeption;
+import com.pyuser.bueno.exceptions.InvalidMoveException;
 import com.pyuser.bueno.helper.Pair;
 
 import java.io.BufferedReader;
@@ -11,23 +11,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Plateau {
+/**
+ * Class represents to map used by the Rover.
+ * Current assumption is map is a rectangle.
+ * Made a final class cos it throws an exception.
+ * @see https://www.oracle.com/technetwork/java/seccodeguide-139067.html#7
+ */
+public final class Plateau {
     int _columns = 0;
     int _rows = 0;
     char[][] _plateau;
 
     public Plateau(String[] thePlateau) {
         _init(thePlateau);
-    }
-
-    private void _init(String[] thePlateau) {
-        /** https://stackoverflow.com/questions/36241039/splitting-the-string-array-into-two-dimensional-character-array **/
-        char[][] plateau = new char[thePlateau.length][];
-        for(int i = 0; i< thePlateau.length; i++){
-            plateau[i] = thePlateau[i].toCharArray();
-        }
-
-        _init(plateau);
     }
 
     public Plateau(String plateauFilename) throws Exception {
@@ -43,6 +39,17 @@ public class Plateau {
         _rows = _plateau.length;
         _columns = _plateau[0].length;
     }
+
+    private void _init(String[] thePlateau) {
+        /** https://stackoverflow.com/questions/36241039/splitting-the-string-array-into-two-dimensional-character-array **/
+        char[][] plateau = new char[thePlateau.length][];
+        for(int i = 0; i< thePlateau.length; i++){
+            plateau[i] = thePlateau[i].toCharArray();
+        }
+
+        _init(plateau);
+    }
+
     public int getColumns() {
         return _columns;
     }
@@ -57,12 +64,10 @@ public class Plateau {
 
         for (int i = _rows - 1; i >= 0; --i) {
             for (int j = 0; j < _columns; ++j) {
-//                System.out.println("" + Integer.toString(i) + " " +  Integer.toString(j));
                 grid.append(Character.toString(_plateau[i][j]));
             }
             grid.append("\n");
         }
-//        System.out.println(grid.toString());
         return "Plateau{\n" + grid + '}';
     }
 
@@ -77,11 +82,11 @@ public class Plateau {
         boolean res = false;
 
         if (row < 0 || col < 0 || row + 1 > _rows || col + 1 > _columns) {
-            throw new InvalidMoveExeption("Out of bounds; " + col + ", " + row);
+            throw new InvalidMoveException("Out of bounds; " + col + ", " + row);
         }
 
         if (_plateau[row][col] == 'R') {
-            throw new InvalidMoveExeption("Occupied by 'R'; " + col + ", " + row);
+            throw new InvalidMoveException("Occupied by 'R'; " + col + ", " + row);
         }
 
         res = true;
@@ -100,9 +105,8 @@ public class Plateau {
                 result.add(br.readLine());
             }
         }
-
         // https://javaconceptoftheday.com/reverse-an-arraylist-in-java/
-        // Need to reverse cos input sequence is bottom up.
+        // Need to reverse cos input sequence in file is bottom up.
         Collections.reverse(result);
 
         String plateau[] = new String[result.size()];
@@ -117,16 +121,14 @@ public class Plateau {
 
         for (int i = _rows - 1; i >= 0; --i) {
             for (int j = 0; j < _columns; ++j) {
-//                System.out.println("" + Integer.toString(i) + " " +  Integer.toString(j));
                 if (i == xMarksTheSpot.getLeft() && j == xMarksTheSpot.getRight()) {
                     grid.append('X');
                 } else {
-                    grid.append(Character.toString(_plateau[i][j]));
+                    grid.append(_plateau[i][j]);
                 }
             }
             grid.append("\n");
         }
-//        System.out.println(grid.toString());
         return grid.toString();
     }
 
@@ -140,17 +142,5 @@ public class Plateau {
         } else {
             return new File(resource.getFile());
         }
-
-    }
-
-
-    public static void main(String[] args) {
-        char[][] plateau = {
-                { 'o', 'o', 'R', 'o' },
-                { 'o', 'o', 'R', 'o' },
-                { 'o', 'o', 'R', 'o' }
-        };
-        Plateau myObj = new Plateau(plateau);
-        System.out.println(myObj);
     }
 }
