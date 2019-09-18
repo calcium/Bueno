@@ -104,6 +104,9 @@ public final class Plateau {
             while (br.ready()) {
                 result.add(br.readLine());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
         // https://javaconceptoftheday.com/reverse-an-arraylist-in-java/
         // Need to reverse cos input sequence in file is bottom up.
