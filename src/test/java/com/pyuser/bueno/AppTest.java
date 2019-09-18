@@ -32,7 +32,6 @@ public class AppTest {
         try {
             _plateau = new Plateau(plateauFilename);
             _rover = new Rover(_plateau.getRows() - 1, 0, 'E', _plateau);
-            System.out.println(_plateau);
         } catch (Exception e) {
             System.err.println("Exception in creating the rover/plateau. Cannot proceed.");
             throw new RuntimeException(e);
@@ -96,7 +95,7 @@ public class AppTest {
             for (int i = 0; i < compass.length; ++i) {
                 _rover.execute("R");  // going clockwise
                 char newOrientation = compass[((i + 4) + 2) % 4];  // + 2 cos start is 'E'
-                System.out.println(i + "; " + _rover.getOrientation());
+//                System.out.println(i + "; " + _rover.getOrientation());
                 assertTrue(_rover.getOrientation() == newOrientation, "Expected orientation is " + newOrientation);
             }
         } catch (Exception e) {
@@ -144,17 +143,11 @@ public class AppTest {
             e.printStackTrace();
         }
         assertTrue(isNavigationSuccessful, "Navigation is expected to have passed.");
-        System.out.println(_plateau.generatePrintout(_rover.getPosition()));
-        System.out.println(_rover.getPosition().getRight());
-        System.out.println(_rover.getPosition().getLeft());
-        System.out.println(_plateau.getColumns());
 
         assertTrue(isNavigationSuccessful &&
                 _rover.getPosition().getLeft() == 0
                 && _rover.getPosition().getRight() == _plateau.getColumns() - 1 ,
                 "Position should be at N, 0.");
-
-        System.out.println(_plateau.generatePrintout(_rover.getPosition()));
     }
 
     @Test
