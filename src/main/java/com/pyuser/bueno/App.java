@@ -15,7 +15,7 @@ public class App
 
         try {
             Plateau plateau = new Plateau(plateauFilename);
-            Rover rover = new Rover(plateau.getRows() - 1,0,  'N', plateau);
+            Rover rover = new Rover(plateau.getRows() - 1,0,  'E', plateau);
 
             rover.console();
         } catch (Exception e) {
