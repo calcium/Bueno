@@ -44,7 +44,6 @@ public class AppTest {
         /* Tests moving in each direction, N, E, S, W
         * (x, y) = (col, row)
         * */
-        init();
         Pair<Integer, Integer> position = _rover.getPosition();
         Pair<Integer, Integer> newPosition = _rover.getPosition();
 
@@ -90,7 +89,6 @@ public class AppTest {
      * Tests rotation clockwise and anti clockwise.
      */
     public void testRotation() {
-        init();
         assertTrue(_rover.getOrientation() == 'E', "Initial orientation should be East.");
 
         char[] compass = {'N', 'E', 'S', 'W'};
@@ -139,7 +137,6 @@ public class AppTest {
 // assume starting point - top left, facing east
         String commandsS = "MMMMMRMMMLMMMMRMM";
         boolean isNavigationSuccessful = false;
-        init();
         try {
             _rover.execute(commandsS);
             isNavigationSuccessful = true;
@@ -167,7 +164,6 @@ public class AppTest {
          *  */
         boolean isOutOfBounds = false;
 
-        init();
         try {
             _rover.execute("MMLMMM");
         } catch (Exception e) {
@@ -181,7 +177,6 @@ public class AppTest {
     public void testInvalidCommand() {
         boolean isInvalidCommand = false;
 
-        init();
         try {
             _rover.execute("MMMKJMM");
         } catch (Exception e) {
@@ -201,7 +196,6 @@ public class AppTest {
         };
 
         boolean isBumpingIntoR = false;
-        init();
         _rover.setPlateau(new Plateau(newMap)); // where X is top left, facing East
         // To bump into R we need to go either MRMM, or RMMLM
         String commands = "MRMM";
@@ -223,7 +217,6 @@ public class AppTest {
          */
         String commands = "MMMMMMMMMM";  // in original map, will bump into 'R' after 5
         int expectedSuccessfulCommandCount = 5;
-        init();
         try {
             _rover.execute(commands);
         } catch (InvalidMoveException e) {
@@ -252,7 +245,6 @@ public class AppTest {
                 "oRo"
         };
 
-        init();
         Plateau plateau = new Plateau(newMap);
         assertEquals(newMap.length, plateau.getRows(), "Number of rows is wrong.");
         assertEquals(newMap[0].length(), plateau.getColumns(), "Number of columns is wrong.");
