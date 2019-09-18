@@ -1,6 +1,6 @@
 # Coding exercises for Bueno
 ## Description
-Coding exercise as`per requested by the Bueno.
+Coding exercise as per requested by the Bueno.
 The Mars Rover programming exercise.
 
 Tested using java 8.
