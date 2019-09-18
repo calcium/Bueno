@@ -162,24 +162,31 @@ public class Rover {
 
     public Pair<Integer, Integer> execute(char command, int iterations) throws Exception {
         _totalCommands++;  // bad/invalid commands are counted.
-        switch (command) {
-            case 'R':
-                rotate('R');
-                break;
-            case 'L':
-                rotate('L');
-                break;
-            case 'M':
-                move(iterations);
-                break;
-            case 'O':
-                if ("dev".equalsIgnoreCase(_env)) {
-                    _totalCommands--;  // not counting this one.
-                    out.println("Rover is facing; " + getOrientation());
+        try {
+            switch (command) {
+                case 'R':
+                    rotate('R');
                     break;
-                }
-            default:
-                throw new InvalidCommandException("Unknown command; " + command);
+                case 'L':
+                    rotate('L');
+                    break;
+                case 'M':
+                    move(iterations);
+                    break;
+                case 'O':
+                    if ("dev".equalsIgnoreCase(_env)) {
+                        _totalCommands--;  // not counting this one.
+                        out.println("Rover is facing; " + getOrientation());
+                        break;
+                    }
+                default:
+                    throw new InvalidCommandException("Unknown command; " + command);
+            }
+        } catch (Exception e) {
+            if ("dev".equalsIgnoreCase(_env)) {
+                out.println("We have a problem; %s".format(e.getMessage()));
+            }
+            throw e;
         }
         return _position;
     }
