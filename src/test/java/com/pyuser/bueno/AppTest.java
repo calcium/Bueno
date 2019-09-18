@@ -167,7 +167,7 @@ public class AppTest {
         try {
             _rover.execute("MMLMMM");
         } catch (Exception e) {
-            System.out.println("Exception '%s' as expected;".format(e.getMessage()));
+            System.out.println(String.format("Exception '%s' as expected;", e.getMessage()));
             isOutOfBounds = true;
         }
         assertTrue(isOutOfBounds, "Expectation was that rover goes out of bounds.");
@@ -180,7 +180,8 @@ public class AppTest {
         try {
             _rover.execute("MMMKJMM");
         } catch (Exception e) {
-            System.out.println("Exception '%s' as expected;".format(e.getMessage()));
+            System.out.println(String.format("Exception '%s' as expected;", e.getMessage()));
+
             isInvalidCommand = true;
         }
         assertTrue(isInvalidCommand, "Expectation was that some invalid commands was found.");
@@ -219,7 +220,7 @@ public class AppTest {
         try {
             _rover.execute(commands);
         } catch (InvalidMoveException e) {
-            System.out.println("Exception '%s' as expected;".format(e.getMessage()));
+            System.out.println(String.format("Exception '%s' as expected;", e.getMessage()));
         } catch (Exception e) {
             assertTrue(false, "This was unexpected.");
         }

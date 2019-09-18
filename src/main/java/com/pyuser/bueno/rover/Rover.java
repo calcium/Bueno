@@ -27,6 +27,7 @@ public class Rover {
     private Plateau _plateau;
     private int _totalCommands = 0;
     private int _failedCommands = 0;
+    private char _lastCommand;
     private String _version = "v1.0";
     final private char[] compass = {'N', 'E', 'S', 'W'};
 
@@ -162,6 +163,7 @@ public class Rover {
 
     public Pair<Integer, Integer> execute(char command, int iterations) throws Exception {
         _totalCommands++;  // bad/invalid commands are counted.
+        _lastCommand = command;
         try {
             switch (command) {
                 case 'R':
@@ -184,7 +186,9 @@ public class Rover {
             }
         } catch (Exception e) {
             if ("dev".equalsIgnoreCase(_env)) {
-                out.println("We have a problem; %s".format(e.getMessage()));
+                String mesg = String.format("Last move (%s:%s). We have a problem; %s",
+                        _lastCommand, _orientation, e.getMessage());
+                out.println(mesg);
             }
             throw e;
         }
