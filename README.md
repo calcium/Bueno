@@ -29,3 +29,25 @@ to easily add new commands as well as to implement add _undo_ functionality.
 exceptions, as opposed to having a class per type of exception.
 * Plateau coordinates are (x, y). Arrays are (rows, cols) which is (y, x) or vice versa.
 I had a lot of trouble with grokking this.
+
+
+## Feeback received
+We've just finished our code reviews, and unfortunately you weren't selected for interview. The feedback from our developers was as follows:
+
+Pros
+
+* README very well written
+
+Cons
+
+* No need to catch the exceptions in the test cases
+* Limited/no use of proper visibility accessors
+* We ask not to use external libraries - I don't see the point of rewriting `Pair` when you can simply introduce a class called `Position`
+* Extraneous links to external references. Not that I don't see the benefits per se, when they are useful
+* Tests are too big/complex and hard to read
+* boolean res = false; [...] res = true; return res;
+* IIRC reference comparison `==` with Integers works only with small numbers, and only with certain VMs (OpenJ9 does not work with this at all)
+* The solution lacks OO design
+* In general not super clean - I don't think an IDE like IntelliJ (which has warnings/suggestions built-in) was used
+* `;  //we swallow` and then `throws Exception` in the signature
+* Why `_env`?
